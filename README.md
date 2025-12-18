@@ -1,5 +1,6 @@
 # Auto-perif-go
 auto-perif-go project description
+It is normal that the large model used in the provided `auto-perif-go.exe` file relies on a free large model API and thus underperforms compared to other models.
 This is a cryptographic security protocol generation and testing tool written in Go, supporting a complete workflow for protocol processing, format conversion, and security verification.
 
 ## Features
@@ -69,11 +70,11 @@ The program supports multiple running modes with the basic syntax:
 
 ## File Descriptions
 
-- 'input.txt': Input file for protocol descriptions
-- 'out.txt': Protocol processing results
-- 'outpdl.txt': PDL format conversion results
-- 'final.spdl': SPDL format conversion results
-- 'config.json': Configuration file
+- `input.txt`: Input file for protocol descriptions
+- `out.txt`: Protocol processing results
+- `outpdl.txt`: PDL format conversion results
+- `final.spdl`: SPDL format conversion results
+- `config.json`: Configuration file
 
 
 ## Usage Examples
