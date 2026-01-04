@@ -1,6 +1,6 @@
 # Auto-perif-go
 auto-perif-go project description
-It is normal that the large model used in the provided `auto-perif-go.exe` file relies on a free large model API and thus underperforms compared to other models.
+Since we currently provide a free large model in the current auto-perif-go.exe，It is normal that the large model configured in the current auto-perif-go.exe may underperform compared to other models
 This is a cryptographic security protocol generation and testing tool written in Go, supporting a complete workflow for protocol processing, format conversion, and security verification.
 
 ## Features
