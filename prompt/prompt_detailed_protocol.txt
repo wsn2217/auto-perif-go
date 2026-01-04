@@ -1,0 +1,238 @@
+请使用规范的语言重新描述以下密码协议，要求：
+1. 保持原协议内容不变,如实反映密码学规范协议，不要增加或删除任何内容
+2. 保留协议名称
+3. 明确协议的参与方
+4. 详细说明每个步骤的消息格式和内容
+5. 明确协议的安全目标
+6. 基于Dolev-Yao模式识别潜在的安全威胁
+
+# 📄 Specification for entity authentication protocol
+
+
+# Rules for making semantic modifications and content supplements to entity authentication protocol described in natural language
+
+## 1. Protocol Name
+* Keep the protocol name. If there is no protocol name, declare a concise, descriptive name for the protocol, such as SNEAP(Self naming entity authentication protocol)
+
+* **Example (Yahalom):**
+    
+    #### Protocol Name
+    Yahalom
+
+* **Example (Custom unnamed entity authentication protocol):**
+    
+    #### Protocol Name
+    SNEAP
+
+## 2. Protocol Roles
+* Clarify all participating roles involved in this entity authentication protocol, explicitly list all them with brief identifiers (e.g., `A`, `B`, `S`)
+
+*   **Example (Yahalom):**
+
+    #### Role
+    **Alice (A)**: The initiator, client
+
+    **Bob (B)**: The responder, server
+
+    **Server (S)**: Trusted Key Distribution Center (KDC)
+
+## 3. Assumptions of the protocol
+
+### ** Cryptographic Primitive Security Assumptions**  
+These are the most fundamental assumptions, asserting that the foundational "building blocks" of the protocol are sound.
+
+- **Rule**: It is assumed that the underlying cryptographic algorithms and protocols function as intended and cannot be compromised.
+- **Examples**:
+  - Hash functions are collision-resistant (i.e., it is infeasible to find two distinct inputs that produce the same hash value).
+  - Encryption algorithms are IND-CPA (Indistinguishable under Chosen-Plaintext Attack) or IND-CCA (Indistinguishable under Chosen-Ciphertext Attack) secure.
+  - Digital signature schemes are existentially unforgeable.
+
+  - **Examples(Yahalom):**:
+    #### Assumptions
+   ({B, Kab, Na, Nb}Kas \):The encryption algorithm for encrypting messages B, Kab, Na, Nb with symmetric keys Kas is secure.
+  
+
+### ** Key Management Assumptions**  
+These pertain to the generation, distribution, storage, and destruction of cryptographic keys. 
+
+- **Rule**: It is assumed that keys have been established or distributed via a secure method during the initial phase.
+- **Examples**:
+  - **Pre-shared Keys**: Two parties are assumed to have already shared a key `K` via a secure out-of-band channel before the protocol begins.
+  - **Public Key Infrastructure (PKI)**: Each participant is assumed to possess legitimate public keys of others and to trust that the corresponding private keys have not been compromised. This implicitly assumes that the **Certificate Authority (CA)** is trusted.
+  - **Key Generation**: Keys are assumed to be generated using a cryptographically secure random number generator with sufficient entropy.
+
+- **Examples(Yahalom):**:
+    #### Assumptions
+   (K{as} \): Symmetric key shared between Alice and Server (known only to Alice and Server)
+
+   (K{bs} \): Symmetric key shared between Bob and Server (known only to Bob and Server)
+
+### ** Participant Behavior Assumptions**  
+These define the trustworthiness and capabilities of the protocol participants.
+
+- **Rule**: Assumptions are made about whether participants will or will not perform certain actions.
+- **Examples**:
+  - **Honest Participants**: Participants are assumed to strictly follow the protocol specifications.
+  - **Semi-Honest Participants**: Participants are assumed to adhere to the protocol but may attempt to learn additional information from received messages.
+  - **Malicious Participants**: Participants may arbitrarily deviate from the protocol to undermine security. Protocols are typically designed to withstand a certain number of malicious participants.
+  - **Computational Capability**: Participants are assumed to have bounded computational power (i.e., polynomial-time bounded), making it infeasible for them to solve computationally hard problems (e.g., large integer factorization).
+
+### ** Trust and Authority Assumptions**  
+These involve trust in third-party entities.
+
+- **Rule**: It is assumed that one or more third-party entities are trustworthy.
+- **Examples**:
+  - **Trusted Third Party (TTP)**: A neutral and always honest arbitrator, key generation center, or certification authority is assumed to exist.
+  - **Time Source**: A trusted and synchronized time source is assumed to exist (e.g., for using timestamps to prevent replay attacks).
+
+- **Examples(Yahalom):**:
+    #### Assumptions
+   Server (S) is a trusted third party.
+
+### ** Synchronization Assumptions**  
+These relate to timing and sequencing during protocol execution. 
+
+- **Rule**: It is assumed that some form of synchronization mechanism exists among participants.
+- **Examples**:
+  - **Loosely Synchronized Clocks**: Participants' clocks are assumed to be roughly synchronized, with a time drift within an acceptable bound `Δt`.
+  - **Round Synchronization**: Network delay is assumed to have a known upper bound, ensuring messages arrive within a predictable time frame so that the protocol can execute in discrete "rounds."
+
+
+## 4. Variables of the protocol
+* Truthfully describe the shared key, fresh random number, timestamp, generated session key, and other variables used in the protocol
+- **Examples(Yahalom):**:
+    #### Variables
+   (K{as} \): Symmetric key shared between Alice and Server (known only to Alice and Server)
+
+   (K{bs} \): Symmetric key shared between Bob and Server (known only to Bob and Server)
+   
+   (Na): Fresh random number generated by Alice (Nonce)
+   
+   (Nb): Fresh random number generated by Bob (Nonce)
+   
+   (K{ab} \): The temporary session key generated by the Server for Alice and Bob's session
+
+## 5. Cryptography Primitive
+* Truthfully reflect the cryptographic primitives used in the protocol, without adding or deleting any content
+
+- **Examples(Yahalom):**:
+    #### Variables
+   ({m}K{as} \):Using symmetric encryption algorithm to encrypt message m, the key used is K{as}.
+
+## 6. Details of Protocol Execution
+* Keep the original protocol content unchanged and provide a detailed explanation of the message format and content for each step
+- **Examples(Yahalom):**:
+    #### Protocol steps
+   **Step 1: Alice → Bob**: Alice sends  (A, Na) to Bob
+
+   Message format: (A, Na)
+
+  Content Description:
+
+  (A): Alice's entity identifier (plaintext)
+
+  (Na): Random number generated by Alice (plaintext)
+
+ **Step 2: Bob → Server**: Bob sends (B,  {A, Na, Nb \}  {K{bs}} \) to the Server
+
+ Message format: (B, \ {A, Na, Nb \} {K{bs}} \)
+
+ Content Description:
+
+ (B): Bob's entity identifier (plaintext)
+
+ (\ {A, Na, Nb \} {K{bs}} \): A ciphertext encrypted with the key \ (K{bs} \), containing Alice's identity, Alice's Nonce \ (Na \), Bob's newly generated Nonce \ (Nb \)
+
+**Step 3: Server → Alice**:The Server sends ( {B, K{ab}, Na, Nb \} {K {as}},  {A, K{ab} \} {K{bs}} \) to Alice.
+
+Message format: ( {B, K{ab}, Na, Nb \} {K{as}},  {A, K{ab} \} {K{bs}} \)
+
+Content Description:
+
+({B, K{ab}, Na, Nb \} {K{as}} \): A ciphertext encrypted with (K{as} \), containing Bob's identity, session key (K{ab} \), Alice's Nonce (Na \), and Bob's Nonce (Nb \)
+
+({A, K{ab} \} {K{bs}} \): A ciphertext encrypted with \ (K{bs} \), containing Alice's identity and the session key (K{ab} \) (to be forwarded by Alice to Bob)
+
+**Step 4: Alice → Bob** Alice forwards the message ( {A, K{ab} } {K{bs}},  {Nb \} {K{ab}} \) to Bob
+
+ Message format :  ( {A, K{ab} \} {K{bs}},  {Nb \} {K{ab}} \)
+
+Content Description:
+({A, K{ab} } {K{bs}}): ciphertext received from the server (forwarded directly without decryption)
+
+( {Nb \} {K{ab}} \): Bob's Nonce (Nb \) encrypted with the session key (K{ab} \)
+
+## 7. Security requirment of Protocol
+* Keep the original protocol content unchanged and clarify the security requirments of the protocol.
+The common security requirements are as follows:
+
+  Mutual authentication: It ensures that all participants can successfully complete authentication each other.
+
+  Forward secrecy: It ensures that the adversary can not deduce any session key from previous sessions even if the long-term secret keys among participants are leaked.
+
+  Resistance to asynchronization attack: It should ensure that both values of pseudonym IDs and one-time hash chain value among participants are synchronized.
+
+  Resistance to wrong password login/update attack: It ensures that the waste of computation and communication resources in the login phase should be avoided. Besides, the mistake occurs in the password update phase should also be considered.
+
+  Secure session key agreement: It ensures that the participants should be able to agree with a secure session key, which will protect transmitted messages in future communications.
+ 
+  Resistance to various attacks: It ensures that various attacks should be prevented, such as man-in-the-middle attack, replay attack and impersonation attack.
+
+- **Examples(Yahalom):**:
+    #### Security requirments
+    Key Distribution Security: Safely distribute the session key (K{ab} \) to Alice and Bob.
+
+    entity authentication: Ensure that Alice and Bob authenticate each other's identities through the server.
+    
+    Freshness Guarantee: Prevent replay attacks through Nonce ( (Na \), \ (Nb \)).
+    
+    Key Confirmation: Alice and Bob confirm each other's possession of the session key (K{ab} \) by encrypting Nonce.
+
+## 8. Attacker capability
+* Potential security threats based on Dolev Yao pattern recognition. 
+
+* **Examples:**
+Let A be an adversary with probabilistic polynomial time. We summarize the feasible attacks launched by A as below.
+
+    A can control the communication channels among all participants, which means that A is able to intercept, modify or block messages transmitted in the public channel.
+    
+    A has an ability to compromise another legitimate external user in the system.
+  
+    A has an ability to compromise another legitimate sensor node in the system.
+
+- **Examples(Yahalom):**:
+    #### Potential security threats under the Dolev Yao threat model
+   Assuming the attacker (Adversarial) has the following abilities:
+
+  Eavesdrop, intercept, tamper with, or forge any message
+
+  Obtain ciphertext corresponding to self generated or known plaintext
+
+  Delay or replay messages
+
+  Potential threat analysis:
+  Message 1  (A, Na \) : Eavesdropping or replay. Attackers can obtain  (A \) and (Na \), but cannot directly exploit them (in conjunction with other messages).
+
+  Message 2  (B,  {A, Na, N_b \} {K{bs}} \):
+  
+  Integrity of ciphertext. If an attacker alters the ciphertext, the server will fail to decrypt but will not leak the information (relying on encryption integrity).
+
+  Replay attack: The attacker may replay old messages, but the server can detect them through Nonce (state maintenance is required).
+
+  Message 3 ({B, K{ab}, Na, Nb \} {K{as}},  {A, K{ab} \}  {K{bs}} \) :
+
+  Cipher eavesdropping: Attackers are unable to decrypt (without (K{as} \) or \ (K{bs} \)). 
+
+  Tampering attack: If the attacker alters the first part, Alice decryption fails; Tampering with the second part may result in Bob receiving the wrong key.
+
+  Message 4 ( {A, K{ab} \}  {K{bs}}, \ {Nb \} {K{ab}} \):
+  
+  Replay attack: The attacker may replay old session key related messages (but Bob can detect freshness through (Nb \)).   
+  
+  Key leakage risk: If an attacker obtains the old  (K {ab} \), they can decrypt ( {Nb \} {K {ab}} \) without actual harm (because \ (Nb \) is a random number).
+
+  Man in the middle attack: If the attacker impersonates Bob to communicate with Alice in step 1 and impersonates Alice to communicate with Bob in step 4, it may hijack the session (but requires breaking through server authentication, which actually depends on the security of \ (K{as} \) and \ (K{bs} \)).
+
+
+协议描述:
+{protocol_description}
